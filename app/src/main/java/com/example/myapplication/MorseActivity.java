@@ -3,7 +3,10 @@ package com.example.myapplication;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -16,9 +19,11 @@ import android.widget.Toast;
 public class MorseActivity extends AppCompatActivity {
 
     Vibrator vibrator;
-    Button longBtn,shortBtn,spaceBtn,Send;
+    Button longBtn,shortBtn,spaceBtn,cheatSheetBtn,Send;
     TextView textView;
     String letter=" ",convertedTxt="";
+    Dialog myDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,17 +31,27 @@ public class MorseActivity extends AppCompatActivity {
         longBtn=(Button)findViewById(R.id.longBut);
         shortBtn=(Button)findViewById(R.id.shortBut);
         spaceBtn=(Button)findViewById(R.id.spaceBut);
+        cheatSheetBtn=(Button)findViewById(R.id.cheatSheet);
+
         Send=(Button)findViewById(R.id.Send);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         textView=(TextView)findViewById(R.id.textView);
-        longBtn.setOnClickListener(new View.OnClickListener() {
+
+        shortBtn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onLongClick(View v) {
+                // TODO Auto-generated method stub
+                Toast.makeText(getApplicationContext(),"You have pressed it long :)", Toast.LENGTH_LONG).show();
                 System.out.println("Vibration long");
                 vibrator.vibrate(400);
                 letter+='-';
+                return true;
+
             }
         });
+
+
+
         shortBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,7 +64,7 @@ public class MorseActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 System.out.println("Letter is "+letter);
-                vibrator.vibrate(200);
+                vibrator.vibrate(1000);
                 String txtToConvert = letter;
                 convertedTxt += MorseCode.morseToAlpha(txtToConvert);
                 convertedTxt.trim();
@@ -57,6 +72,9 @@ public class MorseActivity extends AppCompatActivity {
                 letter="";
             }
         });
+
+
+
         Send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,7 +86,7 @@ public class MorseActivity extends AppCompatActivity {
                     char c=convertedTxt.charAt(i);
                     if(c!=' ')
                         s+=c;
-                } 
+                }
                 System.out.println(s);
                 System.out.println("sending data now....");
                 Intent intent = new Intent(MorseActivity.this, Chat.class);
@@ -76,6 +94,10 @@ public class MorseActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        myDialog = new Dialog(this);
+
+
 
 //
 //        if (vibrator != null && vibrator.hasVibrator()) {
@@ -151,4 +173,20 @@ public class MorseActivity extends AppCompatActivity {
             vibrator.vibrate(effect);
         }
     }
+    public void ShowPopup(View v) {
+        myDialog.setContentView(R.layout.cheat_sheet);
+
+        Button closeSheet = myDialog.findViewById(R.id.closeSheet);
+
+        closeSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+
+    }
+
 }
